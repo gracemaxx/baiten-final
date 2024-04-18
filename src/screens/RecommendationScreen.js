@@ -35,10 +35,25 @@ export default function RecommendationScreen({ onClose, open }) {
     onClose(); // Close the dialog
   };
 
+  // Reset state when dialog closes
+  const handleClose = () => {
+    setCategory('');
+    setCalorieRange('');
+    setMatchingProducts(null);
+    onClose();
+  };
 
+  useEffect(() => {
+    // Reset state when dialog is initially opened
+    if (open) {
+      setCategory('');
+      setCalorieRange('');
+      setMatchingProducts(null);
+    }
+  }, [open]);
 
   return (
-    <Dialog onClose={onClose} aria-labelledby="recommendation-dialog-title" open={open}>
+    <Dialog onClose={handleClose} aria-labelledby="recommendation-dialog-title" open={open}>
             <DialogTitle id="recommendation-dialog-title">Find Your Drink</DialogTitle>
             <DialogContent>
                 <FormControl component="fieldset" style={{ marginRight: '20px' }}>
@@ -59,20 +74,22 @@ export default function RecommendationScreen({ onClose, open }) {
                     </RadioGroup>
                 </FormControl>
 
-                {matchingProducts.length > 0 && (
+                {matchingProducts.length > 0 ? (
                     <div style={{ marginTop: '20px' }}>
                         <Typography variant="h6">Your recommended drinks:</Typography>
                         {matchingProducts.map((product, index) => (
-                            <Typography key={index} style={{ cursor: 'pointer' }} onClick={() => handleProductSelect(product)}>
-                              {product.name} - {product.calorie} Calories
-                            </Typography>
+                        <Typography key={index} style={{ cursor: 'pointer' }} onClick={() => handleProductSelect(product)}>
+                            {product.name} - {product.calories} Calories
+                        </Typography>
                         ))}
                     </div>
-                )}
+                ) :matchingProducts.length === 0 ? (
+                <Typography style={{ marginTop: '20px' }}>No products match your preference.</Typography>
+                ) : null}
 
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose} color="primary"> Back </Button>
+                <Button onClick={handleClose} color="primary"> Back </Button>
                 <Button onClick={handleFindMyDrink} color="primary">
                     Find My Drink
                 </Button>
