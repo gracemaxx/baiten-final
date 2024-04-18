@@ -21,6 +21,9 @@ export default function RecommendationScreen({ onClose, open }) {
     );
 
     setMatchingProducts(foundProducts);
+    setCategory('');
+    setCalorieRange('');
+    setMatchingProducts(null);
   };
 
   const handleProductSelect = (product) => {
