@@ -2,10 +2,8 @@ import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Typography, Dialog, DialogTitle, DialogContent, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Button, DialogActions } from '@material-ui/core';
 import { Store } from '../Store';
-import { useStyles } from '../styles';
 
 export default function RecommendationScreen({ onClose, open }) {
-  const styles = useStyles();
   const { state, dispatch } = useContext(Store);
   const navigate = useNavigate();
   const [category, setCategory] = useState('');
@@ -74,18 +72,20 @@ export default function RecommendationScreen({ onClose, open }) {
                     </RadioGroup>
                 </FormControl>
 
-                {matchingProducts.length > 0 ? (
-                    <div style={{ marginTop: '20px' }}>
-                        <Typography variant="h6">Your recommended drinks:</Typography>
-                        {matchingProducts.map((product, index) => (
-                        <Typography key={index} style={{ cursor: 'pointer' }} onClick={() => handleProductSelect(product)}>
-                            {product.name} - {product.calories} Calories
-                        </Typography>
-                        ))}
-                    </div>
-                ) :matchingProducts.length === 0 ? (
-                <Typography style={{ marginTop: '20px' }}>No products match your preference.</Typography>
-                ) : null}
+                {matchingProducts ? (
+                    matchingProducts.length > 0 ? (
+                        <div style={{ marginTop: '20px' }}>
+                            <Typography variant="h6">Your recommended drinks:</Typography>
+                                {matchingProducts.map((product, index) => (
+                            <Typography key={index} style={{ cursor: 'pointer' }} onClick={() => handleProductSelect(product)}>
+                                {product.name} - {product.calories} Calories
+                            </Typography>
+                            ))}
+                        </div>
+                    ) : (
+                        <Typography style={{ marginTop: '20px' }}>No products match your preference.</Typography>
+                    )) : null}
+
 
             </DialogContent>
             <DialogActions>
