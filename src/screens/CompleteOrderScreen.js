@@ -36,7 +36,7 @@ export default function CompleteOrderScreen(props) {
               <Typography variant="h1" component="h1" gutterBottom className={styles.title}>
                 Thank you!
               </Typography>
-              <Typography variant="h3" component="h3" gutterBott className={styles.title}>
+              <Typography variant="h3" component="h3" gutterBottom className={styles.title}>
                 Your order number is {newOrder.number}
               </Typography>
             </>
