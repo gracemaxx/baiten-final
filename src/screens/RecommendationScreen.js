@@ -21,9 +21,6 @@ export default function RecommendationScreen({ onClose, open }) {
     );
 
     setMatchingProducts(foundProducts);
-    setCategory('');
-    setCalorieRange('');
-    setMatchingProducts(null);
   };
 
   const handleProductSelect = (product) => {
@@ -83,11 +80,12 @@ export default function RecommendationScreen({ onClose, open }) {
                             <Typography key={index} style={{ cursor: 'pointer' }} onClick={() => handleProductSelect(product)}>
                                 {product.name} - {product.calories} Calories
                             </Typography>
-                            ))}
+                        ))}
                         </div>
                     ) : (
                         <Typography style={{ marginTop: '20px' }}>No products match your preference.</Typography>
-                    )) : null}
+                    )
+                    ) : null}
 
 
             </DialogContent>
