@@ -76,11 +76,12 @@ export default function RecommendationScreen({ onClose, open }) {
                     ) : matchingProducts.length > 0 ? (
                     <div style={{ marginTop: '20px' }}>
                         <Typography variant="h6">Your recommended drinks:</Typography>
-                        {matchingProducts.map((product, index) => (
+                        {matchingProducts.map((product, index) => {
+                            console.log(product);
                         <Typography key={index} style={{ cursor: 'pointer' }} onClick={() => handleProductSelect(product)}>
-                            {product.name} - {product.calories} Calories
+                            {product.name} - {product.calorie} Calories
                         </Typography>
-                        ))}
+                        })}
                     </div>
                     ) : (
                     <Typography style={{ marginTop: '20px' }}>No products match your preference.</Typography>
