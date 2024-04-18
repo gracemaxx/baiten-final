@@ -8,7 +8,7 @@ export default function RecommendationScreen({ onClose, open }) {
   const navigate = useNavigate();
   const [category, setCategory] = useState('');
   const [calorieRange, setCalorieRange] = useState('');
-  const [matchingProducts, setMatchingProducts] = useState([]);
+  const [matchingProducts, setMatchingProducts] = useState(null);
 
   const handleFindMyDrink = () => {
     const minCalories = parseInt(calorieRange.split('-')[0], 10);
@@ -19,8 +19,7 @@ export default function RecommendationScreen({ onClose, open }) {
         product.calorie >= minCalories &&
         product.calorie <= maxCalories
     );
-
-    setMatchingProducts(foundProducts);
+    setMatchingProducts(foundProducts.length > 0 ? foundProducts : []);
   };
 
   const handleProductSelect = (product) => {
@@ -72,20 +71,20 @@ export default function RecommendationScreen({ onClose, open }) {
                     </RadioGroup>
                 </FormControl>
 
-                {matchingProducts ? (
-                    matchingProducts.length > 0 ? (
-                        <div style={{ marginTop: '20px' }}>
-                            <Typography variant="h6">Your recommended drinks:</Typography>
-                                {matchingProducts.map((product, index) => (
-                            <Typography key={index} style={{ cursor: 'pointer' }} onClick={() => handleProductSelect(product)}>
-                                {product.name} - {product.calories} Calories
-                            </Typography>
+                {matchingProducts === null ? (
+                    <Typography style={{ marginTop: '20px' }}>Please select options to find drinks.</Typography>
+                    ) : matchingProducts.length > 0 ? (
+                    <div style={{ marginTop: '20px' }}>
+                        <Typography variant="h6">Your recommended drinks:</Typography>
+                        {matchingProducts.map((product, index) => (
+                        <Typography key={index} style={{ cursor: 'pointer' }} onClick={() => handleProductSelect(product)}>
+                            {product.name} - {product.calories} Calories
+                        </Typography>
                         ))}
-                        </div>
+                    </div>
                     ) : (
-                        <Typography style={{ marginTop: '20px' }}>No products match your preference.</Typography>
-                    )
-                    ) : null}
+                    <Typography style={{ marginTop: '20px' }}>No products match your preference.</Typography>
+                    )}
 
 
             </DialogContent>
