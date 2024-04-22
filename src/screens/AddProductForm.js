@@ -13,8 +13,13 @@ function AddProductForm({ open, handleClose }) {
     });
 
     const handleChange = (event) => {
-        setProduct({ ...product, [event.target.name]: event.target.value });
+        if (event.target.name === 'image' && event.target.files) {
+            setProduct({ ...product, [event.target.name]: event.target.files[0] });
+        } else {
+            setProduct({ ...product, [event.target.name]: event.target.value });
+        }
     };
+    
 
     const handleSubmit = async () => {
         try {
@@ -78,14 +83,17 @@ function AddProductForm({ open, handleClose }) {
                     onChange={handleChange}
                 />
                 <TextField
+                    type="file"
                     margin="dense"
-                    label="Image URL"
-                    type="text"
+                    label="Upload Image"
                     fullWidth
                     name="image"
-                    value={product.image}
-                    onChange={handleChange}
+                    onChange={handleChange}  // Adjust to handle file input
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
                 />
+
             </DialogContent>
             <DialogActions>
                 <Button onClick={() => handleClose(false)} color="primary">

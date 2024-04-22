@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const path = require('path');
 const data = require('./data');
+const multer = require('multer');
+const fs = require('fs');
 
 dotenv.config();
 const app = express();
@@ -28,10 +30,21 @@ const Product = mongoose.model(
   })
 );
 
-const orderInfoSchema = new mongoose.Schema({
-  lastOrderDate: { type: String, required: true },
-  currentCount: { type: Number, required: true }
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+      cb(null, 'uploads/'); 
+  },
+  filename: function (req, file, cb) {
+      cb(null, Date.now() + '-' + file.originalname); 
+  }
 });
+
+const upload = multer({ storage: storage });
+
+const dir = './uploads';
+if (!fs.existsSync(dir)){
+    fs.mkdirSync(dir, { recursive: true });
+}
 
 app.get('/api/categories', (req, res) => res.send(data.categories));
 
@@ -47,11 +60,25 @@ app.get('/api/products/seed', async (req, res) => {
   res.send({ products });
 });
 
-app.post('/api/products', async (req, res) => {
-  const newProduct = new Product(req.body);
-  const savedProduct = await newProduct.save();
-  res.send(savedProduct);
+app.post('/api/products', upload.single('image'), async (req, res) => {
+  try {
+      const { name, price, calorie, category, stock } = req.body;
+      const newProduct = new Product({
+          name,
+          price: Number(price),
+          calorie: Number(calorie),
+          category,
+          stock: Number(stock),
+          image: req.file ? req.file.path : '' // Save the path of the uploaded image
+      });
+      const savedProduct = await newProduct.save();
+      res.send(savedProduct);
+  } catch (error) {
+      console.error('Failed to add product:', error);
+      res.status(500).send({ message: 'Failed to add product' });
+  }
 });
+
 
 app.delete('/api/products/:id', async (req, res) => {
   const deletedProduct = await Product.findByIdAndDelete(req.params.id);
@@ -108,6 +135,7 @@ app.get('/api/orders', async (req, res) => {
   const orders = await Order.find({ isDelivered: false, isCanceled: false });
   res.send(orders);
 });
+
 app.put('/api/orders/:id', async (req, res) => {
   const order = await Order.findById(req.params.id);
   if (order) {
@@ -141,30 +169,32 @@ app.delete('/api/orders/:id', async (req, res) => {
   res.send(order);
 });
 
-app.put('/api/products/:id', async (req, res) => {
-  const { stock, price } = req.body;
+app.put('/api/products/:id', upload.single('image'), async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
-    if (!product) {
-      return res.status(404).send({ message: 'Product not found' });
-    }
+      const { stock, price } = req.body;
+      const product = await Product.findById(req.params.id);
+      if (!product) {
+          return res.status(404).send({ message: 'Product not found' });
+      }
 
-    // Update stock if provided
-    if (stock !== undefined && typeof stock === 'number') {
-      product.stock = stock;
-    }
+      if (stock !== undefined && !isNaN(Number(stock))) {
+          product.stock = Number(stock);
+      }
+      if (price !== undefined && !isNaN(Number(price))) {
+          product.price = Number(price);
+      }
+      if (req.file) {
+          product.image = req.file.path; // Update the image path if a new image was uploaded
+      }
 
-    // Update price if provided
-    if (price !== undefined && typeof price === 'number') {
-      product.price = price;
-    }
-
-    await product.save();
-    res.send(product);
+      await product.save();
+      res.send(product);
   } catch (error) {
-    res.status(500).send({ message: 'Error updating product: ' + error.message });
+      console.error('Error updating product:', error);
+      res.status(500).send({ message: 'Error updating product: ' + error.message });
   }
 });
+
 
 
 
