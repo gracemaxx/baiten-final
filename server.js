@@ -6,12 +6,14 @@ const data = require('./data');
 const multer = require('multer');
 const fs = require('fs');
 
+
+
 dotenv.config();
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.use('/uploads', express.static('uploads'));
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -60,24 +62,33 @@ app.get('/api/products/seed', async (req, res) => {
   res.send({ products });
 });
 
-app.post('/api/products', upload.single('image'), async (req, res) => {
+app.post('/api/products', upload.single('imageFile'), async (req, res) => {
+  const { name, price, calorie, category, stock, imageUrl } = req.body;
+  let image = imageUrl;  
+
+
+  if (req.file) {
+      image = req.file.path; 
+  }
+
   try {
-      const { name, price, calorie, category, stock } = req.body;
       const newProduct = new Product({
           name,
-          price: Number(price),
-          calorie: Number(calorie),
+          price,
+          calorie,
           category,
-          stock: Number(stock),
-          image: req.file ? req.file.path : '' // Save the path of the uploaded image
+          stock,
+          image  
       });
-      const savedProduct = await newProduct.save();
-      res.send(savedProduct);
+      await newProduct.save();
+      res.send(newProduct);
   } catch (error) {
       console.error('Failed to add product:', error);
       res.status(500).send({ message: 'Failed to add product' });
   }
 });
+
+
 
 
 app.delete('/api/products/:id', async (req, res) => {

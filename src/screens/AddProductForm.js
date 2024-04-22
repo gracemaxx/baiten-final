@@ -13,24 +13,48 @@ function AddProductForm({ open, handleClose }) {
     });
 
     const handleChange = (event) => {
-        if (event.target.name === 'image' && event.target.files) {
+        if (event.target.type === 'file') {
             setProduct({ ...product, [event.target.name]: event.target.files[0] });
         } else {
             setProduct({ ...product, [event.target.name]: event.target.value });
         }
     };
     
+    
+
+    // AddProductForm.js
 
     const handleSubmit = async () => {
+        const formData = new FormData();
+        formData.append('name', product.name);
+        formData.append('price', product.price);
+        formData.append('calorie', product.calorie);
+        formData.append('category', product.category);
+        formData.append('stock', product.stock);
+        // Check if a file has been selected; if so, append it
+        if (product.imageFile) {
+            formData.append('imageFile', product.imageFile);
+        } else {
+            // Otherwise, append the imageUrl if available
+            formData.append('imageUrl', product.imageUrl || '');
+        }
+
         try {
-            await Axios.post('/api/products', product);
+            await Axios.post('/api/products', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
             alert('Product added successfully');
-            handleClose(true);  // refresh the list if needed
+            handleClose(true);  // Assuming this refreshes the product list
         } catch (error) {
             console.error('Error adding product:', error);
             alert('Failed to add product. Please try again.');
         }
     };
+
+    
+    
 
     return (
         <Dialog open={open} onClose={() => handleClose(false)}>
@@ -87,13 +111,12 @@ function AddProductForm({ open, handleClose }) {
                     margin="dense"
                     label="Upload Image"
                     fullWidth
-                    name="image"
-                    onChange={handleChange}  // Adjust to handle file input
+                    name="imageFile"
+                    onChange={handleChange} 
                     InputLabelProps={{
                         shrink: true,
                     }}
                 />
-
             </DialogContent>
             <DialogActions>
                 <Button onClick={() => handleClose(false)} color="primary">

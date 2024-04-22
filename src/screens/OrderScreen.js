@@ -146,7 +146,8 @@ export default function OrderScreen() {
                     <Grid item md={6}>
                       <Card className={styles.card} onClick= {()=>productClickHandler(product)}>
                       <CardActionArea>
-                        <CardMedia component="img" alt={product.name} image={product.image} className={styles.media}>
+                        <CardMedia component="img" alt={product.name} className={styles.media} 
+                        image={product.image || `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/uploads/${product.image.split('\\').pop()}`}>
                         </CardMedia>
                         <CardContent>
                         <Typography gutterBottom variant="body2" color="textPrimary" component="p">
