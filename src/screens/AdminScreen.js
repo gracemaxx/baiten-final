@@ -60,9 +60,10 @@ export default function AdminScreen(props) {
                     <TableCell align="right">
                       {order.orderItems.map((item) => (
                         <Box>
-                          {item.name} x {item.quantity}
+                          {item.name} x {item.quantity} - Sugar Level: {item.sugarLevel}
                         </Box>
                       ))}
+                      
                     </TableCell>
                     <TableCell align="right">{order.orderType}</TableCell>
                     <TableCell align="right">{order.paymentType}</TableCell>

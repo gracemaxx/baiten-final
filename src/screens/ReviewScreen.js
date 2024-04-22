@@ -21,13 +21,7 @@ import Logo from '../components/Logo';
 export default function ReviewScreen(props) {
   const styles = useStyles();
   const { state, dispatch } = useContext(Store);
-  const {
-    orderItems,
-    itemsCount,
-    totalPrice,
-    taxPrice,
-    orderType,
-  } = state.order;
+  const { orderItems, itemsCount, totalPrice, taxPrice, orderType } = state.order;
   const [quantity, setQuantity] = useState(1);
   const [isOpen, setIsOpen] = useState(false);
   const [product, setProduct] = useState({});
@@ -156,6 +150,13 @@ export default function ReviewScreen(props) {
                       >
                         {orderItem.calorie} Cal
                       </Typography>
+                      <Typography
+                        variant="body2"
+                        color="textPrimary"
+                        component="p"
+                      >
+                        Sugar Level: {orderItem.sugarLevel}
+                      </Typography> 
                       <Typography
                         variant="body2"
                         color="textPrimary"

@@ -45,7 +45,7 @@ export const listProducts = async (dispatch, categoryName = '') => {
 export const addToOrder = async (dispatch, item) => {
   return dispatch({
     type: ORDER_ADD_ITEM,
-    payload: item,
+    payload: { ...item, sugarLevel: item.sugarLevel || 0 },
   });
 };
 

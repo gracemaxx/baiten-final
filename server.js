@@ -27,6 +27,11 @@ const Product = mongoose.model(
   })
 );
 
+const orderInfoSchema = new mongoose.Schema({
+  lastOrderDate: { type: String, required: true },
+  currentCount: { type: Number, required: true }
+});
+
 app.get('/api/categories', (req, res) => res.send(data.categories));
 
 
@@ -57,6 +62,7 @@ const Order = mongoose.model(
   new mongoose.Schema(
     {
       number: { type: Number, default: 0 },
+      lastNumberResetDate: { type: String, default: () => new Date().toISOString().slice(0, 10) }, // YYYY-MM-DD format
       orderType: String,
       paymentType: String,
       isPaid: { type: Boolean, default: false },
@@ -71,6 +77,7 @@ const Order = mongoose.model(
           name: String,
           price: Number,
           quantity: Number,
+          sugarLevel: Number,
         },
       ],
     },
@@ -83,6 +90,7 @@ const Order = mongoose.model(
 app.post('/api/orders', async (req, res) => {
   const lastOrder = await Order.find().sort({ number: -1 }).limit(1);
   const lastNumber = lastOrder.length === 0 ? 0 : lastOrder[0].number;
+  
   if (
     !req.body.orderType ||
     !req.body.paymentType ||
@@ -94,6 +102,7 @@ app.post('/api/orders', async (req, res) => {
   const order = await Order({ ...req.body, number: lastNumber + 1 }).save();
   res.send(order);
 });
+
 app.get('/api/orders', async (req, res) => {
   const orders = await Order.find({ isDelivered: false, isCanceled: false });
   res.send(orders);
@@ -130,6 +139,24 @@ app.delete('/api/orders/:id', async (req, res) => {
   const order = await Order.findByIdAndDelete(req.params.id);
   res.send(order);
 });
+
+app.put('/api/products/:id', async (req, res) => {
+  const { stock } = req.body;
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res.status(404).send({ message: 'Product not found' });
+    }
+    product.stock = stock;
+    await product.save();
+    res.send(product);
+  } catch (error) {
+    res.status(500).send({ message: 'Error updating product: ' + error.message });
+  }
+});
+
+
+
 app.use(express.static(path.join(__dirname, '/build')));
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '/build/index.html'));

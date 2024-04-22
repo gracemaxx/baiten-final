@@ -10,6 +10,7 @@ const data = {
       name: 'Bubble tea',
       price: 5,
       calorie: 90,
+      stock:999,
       image: '/images/bubbletea.jpg',
     },
     {
@@ -17,6 +18,7 @@ const data = {
       name: 'Bubble latte',
       price: 8,
       calorie: 120,
+      stock:999,
       image: '/images/bubblelatte.jpg',
     },
     {
@@ -24,6 +26,7 @@ const data = {
       name: 'Bubble taro milk tea',
       price: 6,
       calorie: 430,
+      stock:999,
       image: '/images/bubbletaro.jpg',
     },
     {
@@ -31,14 +34,15 @@ const data = {
       name: 'All fruit tea',
       price: 5.5,
       calorie: 55,
-      image:
-        '/images/allfruit.jpg',
+      stock:999,
+      image:'/images/allfruit.jpg',
     },
     {
       category: 'Fruit teas',
       name: 'Mango fruit tea',
       price: 1.5,
       calorie: 120,
+      stock:999,
       image: '/images/mango.jpg',
     },
     {
@@ -46,6 +50,7 @@ const data = {
       name: 'Apple tea',
       price: 7,
       calorie: 95,
+      stock:999,
       image: '/images/apple.jpg',
     },
     {
@@ -53,6 +58,7 @@ const data = {
       name: 'Jasmine tea',
       price: 1.9,
       calorie: 18,
+      stock:999,
       image: '/images/jasminetea.jpg',
     },
     {
@@ -60,6 +66,7 @@ const data = {
       name: 'Black tea',
       price: 1.5,
       calorie: 20,
+      stock:999,
       image: '/images/blacktea.jpg',
     },
     {
@@ -67,6 +74,7 @@ const data = {
       name: 'Mint tea',
       price: 3,
       calorie: 50,
+      stock:999,
       image: '/images/minttea.jpg',
     },
   ],

@@ -11,6 +11,7 @@ import SelectPaymentScreen from './screens/SelectPaymentScreen';
 import PaymentScreen from './screens/PaymentScreen';
 import CompleteOrderScreen from './screens/CompleteOrderScreen';
 import AdminScreen from './screens/AdminScreen';
+import ContentManageScreen from './screens/­contentManageScreen';
 
 const theme = createTheme({
   typography: {
@@ -50,6 +51,7 @@ function App() {
               <Route path="/payment" element={<PaymentScreen />} exact></Route>
               <Route path="/complete" element={<CompleteOrderScreen />} exact></Route>
               <Route path="/admin" element={<AdminScreen />} exact></Route>
+              <Route path="/content-manage" element={<ContentManageScreen />} exact></Route>
             </Routes>
           </Paper>
         </Container>

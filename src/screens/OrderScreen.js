@@ -1,14 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Avatar, Box, Card, CardActionArea, CardContent, CardMedia, Grid, List, ListItem, CircularProgress, Typography, Dialog, DialogTitle, TextField, Button} from '@material-ui/core';
+import { Avatar, Box, Card, CardActionArea, CardContent, CardMedia, Grid, List, ListItem, CircularProgress, Typography, Dialog, DialogTitle, TextField, Button, Slider } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { useStyles } from '../styles';
 import { Store } from '../Store';
 import {listCategories, listProducts, addToOrder, removeFromOrder, clearOrder} from '../actions';
 import Logo from '../components/Logo';
-import AddIcon from '@material-ui/icons/Add';
-import RemoveIcon from '@material-ui/icons/Remove';
 import RecommendationScreen from './RecommendationScreen'
+
 
 export default function OrderScreen() {
     const styles = useStyles();
@@ -35,6 +34,7 @@ export default function OrderScreen() {
     const navigate = useNavigate();
     const location = useLocation();
     const [showRecommendations, setShowRecommendations] = useState(false);
+    const [sugarLevel, setSugarLevel] = useState(5);
 
     const categoryClickHandler = (name) => {
       setCategoryName(name);
@@ -43,12 +43,14 @@ export default function OrderScreen() {
     const closeHandler = () => {
       setIsOpen(false);
     };
-    const productClickHandler = (p) => {
-      setProduct(p);
+    const productClickHandler = (product) => {
+      setProduct(product);
       setIsOpen(true);
+      setQuantity(1);
+      setSugarLevel(5);
     };
     const addToOrderHandler = () => {
-      addToOrder(dispatch, { ...product, quantity });
+      addToOrder(dispatch, { ...product, quantity, sugarLevel });
       setIsOpen(false);
     };
     const cancelOrRemoveFromOrder = () => {
@@ -75,53 +77,31 @@ export default function OrderScreen() {
     return (
     <Box className={styles.root}>
       <Box className={styles.main}>
-        <Dialog maxWidth="sm" fullWidth={true} open={isOpen} onClose={closeHandler}> 
-          <DialogTitle className={styles.center}>
-            Add {product.name}
-          </DialogTitle>
-          <Box className={[styles.row, styles.center]}>
-            <Button variant="contained" color="primary" disabled={quantity === 1}
-                onClick={(e) => quantity > 1 && setQuantity(quantity - 1)}>
-                  <RemoveIcon />
-            </Button>
-            <TextField
-                inputProps={{ className: styles.largeInput }}
-                InputProps={{ bar: true, inputProps: { className: styles.largeInput},
-                }}
-                className={styles.largeNumber}
-                type="number"
-                variant="filled"
-                min={1}
-                value={quantity}
-              />
-            <Button variant="contained" color="primary" onClick={(e) => setQuantity(quantity + 1)}>
-              <AddIcon />
-            </Button>
-          </Box>
-          <Box className={[styles.row, styles.around]}>
-            <Button
-              onClick={cancelOrRemoveFromOrder}
-              variant="contained"
-              color="primary"
-              size="large"
-              className={styles.largeButton}
-            >
-              {orderItems.find((x) => x.name === product.name)
-                ? 'Remove From Order'
-                : 'Cancel'}
-            </Button>
-
-            <Button
-              onClick={addToOrderHandler}
-              variant="contained"
-              color="primary"
-              size="large"
-              className={styles.largeButton}
-            >
-              ADD To Order
-            </Button>
-          </Box>
-        </Dialog>
+      <Dialog maxWidth="sm" fullWidth={true} open={isOpen} onClose={closeHandler}>
+                <DialogTitle className={styles.center}>Customize {product.name}</DialogTitle>
+                <Box display="flex" p={2}>
+                    <CardMedia component="img" image={product.image} title={product.name} style={{ width: '50%', height: '300px' }} />
+                    <Box ml={2} flex="1">
+                        <Typography variant="h6">{product.name}</Typography>
+                        <Typography variant="subtitle1">{product.description}</Typography>
+                        <Typography variant="body2">Calories: {product.calorie}</Typography>
+                        <Typography variant="body2">Price: ${product.price}</Typography>
+                        <br></br>
+                        <Typography component="div" mt={2}>
+                            Sugar Level: <Slider value={sugarLevel} onChange={(e, newValue) => setSugarLevel(newValue)} step={1} marks min={0} max={10} valueLabelDisplay="auto" />
+                        </Typography>
+                        <Box mt={2} display="flex" alignItems="center" justifyContent="center">
+                            <Button variant="contained" color="primary" onClick={() => setQuantity(q => q + 1)}>+</Button>
+                            <TextField value={quantity} onChange={(e) => setQuantity(Number(e.target.value))} type="number" inputProps={{ min: 1, style: { textAlign: 'center' } }} />  
+                            <Button variant="contained" color="primary" onClick={() => setQuantity(q => q - 1)} disabled={quantity === 1}>-</Button>
+                        </Box>
+                    </Box>
+                </Box>
+                <Box display="flex" justifyContent="space-around" p={2}>
+                    <Button onClick={closeHandler} color="primary">Cancel</Button>
+                    <Button onClick={addToOrderHandler} color="primary">Add to Basket</Button>
+                </Box>
+            </Dialog>
 
         <Grid container>
             <Grid item md={2}>
@@ -160,7 +140,9 @@ export default function OrderScreen() {
                 ) : errorProducts ? (
                   <Alert severity="error">{errorProducts}</Alert>
                 ) : (
-                  products.map((product) => (
+                  products
+                  .filter(product => product.stock > 0)
+                  .map((product) => (
                     <Grid item md={6}>
                       <Card className={styles.card} onClick= {()=>productClickHandler(product)}>
                       <CardActionArea>
