@@ -24,6 +24,7 @@ const Product = mongoose.model(
     price: Number,
     calorie: Number,
     category: String,
+    stock: Number,
   })
 );
 
@@ -141,19 +142,32 @@ app.delete('/api/orders/:id', async (req, res) => {
 });
 
 app.put('/api/products/:id', async (req, res) => {
-  const { stock } = req.body;
+  const { stock, price } = req.body;
   try {
     const product = await Product.findById(req.params.id);
     if (!product) {
       return res.status(404).send({ message: 'Product not found' });
     }
-    product.stock = stock;
+
+    // Update stock if provided
+    if (stock !== undefined && typeof stock === 'number') {
+      product.stock = stock;
+    }
+
+    // Update price if provided
+    if (price !== undefined && typeof price === 'number') {
+      product.price = price;
+    }
+
     await product.save();
     res.send(product);
   } catch (error) {
     res.status(500).send({ message: 'Error updating product: ' + error.message });
   }
 });
+
+
+
 
 
 
