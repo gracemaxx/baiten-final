@@ -11,7 +11,7 @@ import SelectPaymentScreen from './screens/SelectPaymentScreen';
 import PaymentScreen from './screens/PaymentScreen';
 import CompleteOrderScreen from './screens/CompleteOrderScreen';
 import AdminScreen from './screens/AdminScreen';
-import ContentManageScreen from './screens/­ContentManageScreen';
+import ContentManageScreen from './screens/ContentManageScreen';
 
 const theme = createTheme({
   typography: {
